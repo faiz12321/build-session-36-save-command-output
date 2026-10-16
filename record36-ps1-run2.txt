@@ -1,0 +1,69 @@
+### CMD: ./setup36.ps1
+Created sample/data.csv and sample/notes.txt with fictional content.
+Existing sample paths are refused. Use a different new lesson folder for fresh practice.
+### EXIT: 0
+
+### CMD: ./setup36.ps1
+Stopped: sample already exists or could not be created. Nothing there was replaced.
+### EXIT: 1
+
+### CMD: cmd /d /c "dir /b sample" | Out-File -LiteralPath sample\listing.txt -Encoding utf8 -NoClobber
+### EXIT: 0
+
+### CMD: Get-Content -LiteralPath sample\listing.txt -Encoding utf8
+data.csv
+listing.txt
+notes.txt
+### EXIT: 0
+
+### CMD: 'replacement' | Out-File -LiteralPath sample\listing.txt -Encoding utf8 -NoClobber
+Out-File: The file 'C:\Users\runneradmin\AppData\Local\Temp\lesson36-record-e_o8nks8\sample\listing.txt' already exists.
+### EXIT: 1
+
+### CMD: cmd /d /c "type sample\missing.txt" | Out-File -LiteralPath sample\stdout-only.txt -Encoding utf8 -NoClobber; "Native exit: $LASTEXITCODE"
+The system cannot find the file specified.
+Native exit: 1
+### EXIT: 0
+
+### CMD: (Get-Item -LiteralPath sample\stdout-only.txt).Length
+0
+### EXIT: 0
+
+### CMD: cmd /d /c "type sample\missing.txt" 2>&1 | Out-File -LiteralPath sample\combined.txt -Encoding utf8 -NoClobber; "Native exit: $LASTEXITCODE"
+Native exit: 1
+### EXIT: 0
+
+### CMD: Get-Content -LiteralPath sample\combined.txt -Encoding utf8
+The system cannot find the file specified.
+### EXIT: 0
+
+### CMD: powershell.exe -NoProfile -Command "'hello' | Out-File -LiteralPath sample\hello51.txt -NoClobber"
+### EXIT: 0
+
+### CMD: 'hello' | Out-File -LiteralPath sample\hello7.txt -NoClobber
+### EXIT: 0
+
+### CMD: '5.1: ' + [BitConverter]::ToString([IO.File]::ReadAllBytes('sample\hello51.txt')[0..3]); '7: ' + [BitConverter]::ToString([IO.File]::ReadAllBytes('sample\hello7.txt')[0..3])
+5.1: FF-FE-68-00
+7: 68-65-6C-6C
+### EXIT: 0
+
+### CMD: Get-Content -LiteralPath sample\hello51.txt -Encoding Unicode | Out-File -LiteralPath sample/converted.txt -Encoding utf8NoBOM -NoClobber
+### EXIT: 0
+
+### CMD: Get-Content -LiteralPath sample/converted.txt -Encoding utf8; [BitConverter]::ToString([IO.File]::ReadAllBytes('sample/converted.txt')[0..3])
+hello
+68-65-6C-6C
+### EXIT: 0
+
+### CMD: ./test_setup36.ps1
+PASS: new setup succeeds
+PASS: only two fictional input files created
+PASS: repeat setup refuses
+PASS: nested unrelated bytes and modification time survive
+PASS: Out-File NoClobber refuses an existing output
+PASS: known hello fixture has equal decoded text after conversion
+PASS: conversion leaves source bytes unchanged
+PASS: converted hello fixture starts with UTF-8 bytes
+8 limited fixture checks passed.
+### EXIT: 0
