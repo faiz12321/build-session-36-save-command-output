@@ -1,0 +1,17 @@
+name: test
+on: [push, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: ./test_setup36.ps1
+        shell: pwsh
+      - run: python record36-driver.py
+        shell: pwsh
